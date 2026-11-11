@@ -1,6 +1,6 @@
 {
-  "name": "ship-release",
-  "version": "0.1.0",
+  "name": "ship-release-skill",
+  "version": "0.1.1",
   "description": "Claude Code skill that ships a release: bump manifests, changelog, README badges, tag, GitHub release, npm publish and check.",
   "license": "MIT",
   "repository": {
@@ -8,7 +8,7 @@
     "url": "git+https://github.com/joezhuo2/ship-release-skill.git"
   },
   "bin": {
-    "ship-release": "bin/install.js"
+    "ship-release-skill": "bin/install.js"
   },
   "files": [
     "bin",

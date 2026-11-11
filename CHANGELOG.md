@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.1] - 2026-11-11
+
+### Changed
+
+- npm package renamed to `ship-release-skill`; the `ship-release` name on npm belongs to another package. 0.1.0 was never published to npm.
+
 ## [0.1.0] - 2026-11-11
 
 ### Added

@@ -1,8 +1,8 @@
 <h1 align="center">ship-release</h1>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/ship-release"><img src="https://img.shields.io/npm/v/ship-release?logo=npm&color=orange" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/ship-release"><img src="https://img.shields.io/npm/dt/ship-release?logo=npm&color=blue" alt="npm downloads"></a>
+  <a href="https://www.npmjs.com/package/ship-release-skill"><img src="https://img.shields.io/npm/v/ship-release-skill?logo=npm&color=orange" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/ship-release-skill"><img src="https://img.shields.io/npm/dt/ship-release-skill?logo=npm&color=blue" alt="npm downloads"></a>
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey" alt="platform: Windows | macOS | Linux">
   <a href="https://code.claude.com/docs/en/plugins"><img src="https://img.shields.io/badge/Claude%20Code-plugin-D97757?logo=claude&logoColor=white" alt="Claude Code plugin"></a>
   <a href="https://nodejs.org"><img src="https://img.shields.io/badge/Node-18%2B-5FA04E?logo=nodedotjs&logoColor=white" alt="Node 18+"></a>
@@ -30,17 +30,17 @@ Pick one. All of them install the same plugin.
 - **npx:** nothing stays installed besides the plugin.
 
   ```bash
-  npx ship-release
+  npx ship-release-skill
   ```
 
-- **npm, global:** installs the `ship-release` command, which you then run once.
+- **npm, global:** installs the `ship-release-skill` command, which you then run once.
 
   ```bash
-  npm i -g ship-release
+  npm i -g ship-release-skill
   ```
 
   ```bash
-  ship-release
+  ship-release-skill
   ```
 
 - **Claude Code plugin marketplace:** run these inside Claude Code.
@@ -94,7 +94,7 @@ Or call the skill directly:
 |------|---------|
 | `skills/ship-release/SKILL.md` | The release procedure Claude follows. |
 | `.claude-plugin/` | Plugin manifest and marketplace entry. |
-| `bin/install.js` | The `npx ship-release` installer. |
+| `bin/install.js` | The `npx ship-release-skill` installer. |
 | `test.js` | Self-test: versions agree and the skill is well formed. |
 
 ## Development

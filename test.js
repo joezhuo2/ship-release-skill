@@ -17,6 +17,6 @@ const front = skill.match(/^---\r?\n([\s\S]*?)\r?\n---/)[1];
 assert.match(front, /^name: ship-release$/m, 'skill has a name');
 assert.match(front, /^description: Use when .{40,}$/m, 'skill has a trigger description');
 
-for (const f of [...pkg.files, pkg.bin['ship-release']]) assert.ok(fs.existsSync(path.join(__dirname, f)), `${f} exists`);
+for (const f of [...pkg.files, pkg.bin[pkg.name]]) assert.ok(fs.existsSync(path.join(__dirname, f)), `${f} exists`);
 
 console.log('ok');
