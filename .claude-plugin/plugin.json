@@ -1,0 +1,8 @@
+{
+  "name": "ship-release",
+  "version": "0.1.0",
+  "description": "Ships a release end to end: bump manifests, changelog, README badges, tag, GitHub release, npm publish and check.",
+  "author": { "name": "joezhuo2" },
+  "repository": "https://github.com/joezhuo2/ship-release-skill",
+  "license": "MIT"
+}

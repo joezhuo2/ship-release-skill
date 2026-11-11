@@ -1,0 +1,11 @@
+{
+  "name": "ship-release",
+  "owner": { "name": "joezhuo2" },
+  "plugins": [
+    {
+      "name": "ship-release",
+      "source": "./",
+      "description": "Ships a release end to end: bump manifests, changelog, README badges, tag, GitHub release, npm publish and check."
+    }
+  ]
+}
