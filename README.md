@@ -58,12 +58,13 @@ Restart Claude Code afterwards. The skill needs `git` and the
 | Step | What happens |
 |------|--------------|
 | Pick the version | Uses the one you gave, or proposes patch / minor / major from the commits since the last tag. |
-| Preflight | Clean tree, default branch, up to date, tag is free, `gh` and `npm` logged in, version not on npm, tests pass. |
+| Preflight | Clean tree, default branch or a release branch, up to date, tag is free, `gh` and `npm` logged in, version not on npm, tests pass. |
 | Bump manifests | Greps the old version and bumps `package.json`, lockfile, `.claude-plugin/plugin.json`, `marketplace.json`, `pyproject.toml`, `Cargo.toml` and version constants. |
 | Changelog | Adds a dated section in the file's own format, written from the commits. |
 | README | Updates hardcoded version badges and pinned install lines; leaves dynamic badges alone. |
 | Confirm | Shows the version, files and changelog section, and asks once before anything goes public. |
-| Commit, tag, push | Release commit in the repo's style, annotated tag, plain pushes. Never `--force`. |
+| Commit, land, tag | Release commit in the repo's style, pushed directly or through a pull request, then an annotated tag. Never `--force`. |
+| Pull request route | On a branch, in a worktree or with a protected default branch: pre-PR check, open the PR, fix conflicts, wait for checks, merge, then remove the worktree and branch. |
 | GitHub release | Waits for a tag-triggered release workflow if the repo has one, otherwise `gh release create` with the changelog section. |
 | npm | Publishes unless a workflow does or the package is private, then checks the registry shows the new version. |
 | Report | Version, tag, release URL, npm URL, and anything skipped or failed. |

@@ -1,6 +1,6 @@
 ---
 name: ship-release
-description: Use when the user asks to release, ship, publish, cut or tag a version of a project ("release v0.2.0", "ship a patch", "bump and publish"). Bumps every version manifest, updates CHANGELOG and README badges, commits, tags, creates the GitHub release, and publishes to or verifies npm.
+description: Use when the user asks to release, ship, publish, cut or tag a version of a project ("release v0.2.0", "ship a patch", "bump and publish"). Bumps every version manifest, updates CHANGELOG and README badges, commits, lands it directly or through a pull request (pre-PR check, conflict fixes, merge, worktree cleanup), tags, creates the GitHub release, and publishes to or verifies npm.
 argument-hint: "[version | patch | minor | major]"
 ---
 
@@ -22,7 +22,7 @@ Run the steps in order. Stop and report as soon as a step fails; never skip ahea
 All of these must pass before any file changes:
 
 - `git status --porcelain` is clean, or holds only changes meant for this release. Ask about anything else.
-- You are on the default branch and, after `git fetch`, not behind its upstream.
+- After `git fetch`, you are on the default branch and not behind its upstream. On any other branch, or in a linked worktree (`git worktree list`), the release goes through the PR route in step 7.
 - The tag does not exist: `git tag -l <tag>` and `git ls-remote --tags origin <tag>` are both empty.
 - `gh auth status` succeeds.
 - If `package.json` exists and is not `"private": true`: `npm whoami` succeeds and `npm view <name>@<version> version` finds nothing.
@@ -70,12 +70,38 @@ Read each grep hit before changing it: bump the project's own version, not a dep
 - `git diff --stat` and read the diff for secrets (tokens, `.env`, keys).
 - Show the user the version, the changed files and the new changelog section. Ask once before step 7, unless they already told you to release without asking. Everything after this point is public and cannot be undone.
 
-## 7. Commit, tag, push
+## 7. Commit, land, tag
 
-- Stage only the release files. Use the message style of earlier release commits (`git log --oneline -20`); default `Release v<new>`.
-- If the default branch is protected or the repo releases through PRs: push a `release/v<new>` branch, open a PR, wait for the merge, then tag the merge commit.
-- `git tag -a <tag> -m "<tag>"`
-- `git push origin <branch>` then `git push origin <tag>`. Never `--tags`, never `--force`.
+Stage only the release files. Use the message style of earlier release commits (`git log --oneline -20`); default `Release v<new>`.
+
+Pick one route to get the commit onto the default branch:
+
+- **Direct:** you are on the default branch, it is not protected and the repo does not release through PRs. `git push origin <branch>`.
+- **PR:** anything else. Follow the PR route below.
+
+Then tag the commit that is on the default branch: `git tag -a <tag> -m "<tag>"` and `git push origin <tag>`. Never `--tags`, never `--force`.
+
+### PR route
+
+1. **Branch.** If you are on the default branch, `git switch -c release/v<new>` before committing. Otherwise keep the branch you are on.
+2. **Pre-PR check.** All must pass before the push:
+   - `git fetch origin`, then `git merge origin/<default>`. Resolve conflicts as in step 4 below.
+   - `git diff origin/<default>...HEAD --stat` lists only files meant for this release. Read the diff for secrets and leftover debug code.
+   - The tests pass on the merged result.
+   - `gh pr list --head <branch>` shows no open PR for this branch. If one exists, reuse it.
+3. **Open the PR.** `git push -u origin <branch>`, then `gh pr create --base <default> --title "Release v<new>" --body-file <file>` with the new changelog section as the body.
+4. **Fix conflicts.** `gh pr view --json mergeable,mergeStateStatus`. If it reports `CONFLICTING`:
+   - `git fetch origin && git merge origin/<default>`. Never rebase or force-push a pushed branch.
+   - Version manifests take the new version. In the changelog, keep the entries from both sides, the new section on top.
+   - In code, keep the intent of both sides. If you cannot tell what the other side meant, stop and ask.
+   - Run the tests, commit the merge, push.
+5. **Checks.** `gh pr checks --watch`. If one fails, read `gh run view --log-failed`, fix, push, and watch again.
+6. **Merge.** Use the method earlier PRs used (`gh pr list --state merged --limit 5 --json mergeCommit,title`); default `gh pr merge --squash --delete-branch`. In a linked worktree leave out `--delete-branch` and run `git push origin --delete <branch>` afterwards. If a review is required, stop and ask the user for it. Never `--admin`.
+7. **Sync.** In the main checkout: `git switch <default>` and `git pull --ff-only`. This is the commit to tag.
+8. **Delete the worktree, if the branch lived in one.** From the main checkout:
+   - `git worktree remove <path>`. No `--force`: if git refuses, show the user the files left in it and ask.
+   - `git branch -d <branch>`. After a squash merge git refuses; confirm `gh pr view <number> --json state` says `MERGED`, then use `-D`.
+   - `git worktree prune`.
 
 ## 8. GitHub release
 
@@ -101,5 +127,6 @@ Give the version, the tag, the release URL, the npm URL, and anything skipped, f
 
 - Before the push: fix it and amend freely.
 - After the push: never move or delete a pushed tag, never force-push, never `npm unpublish`. Fix forward with a patch release.
+- PR merged but not tagged: tag the merge commit on the default branch and carry on from there. Do not open a second PR.
 - Tag pushed but `npm publish` failed: fix the cause and publish again from the tagged commit. Do not retag.
 - Release workflow failed: read `gh run view --log-failed`, fix forward, and tell the user what state the tag, the release and the registry are in.
