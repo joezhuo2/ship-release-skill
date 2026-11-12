@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.1.3] - 2026-11-12
+
+### Added
+
+- Worktree cleanup step: after the release, remove every worktree the agent created during the session and its merged branch, then prune. Worktrees the user made are left alone.
+
 ## [0.1.2] - 2026-11-11
 
 ### Added
