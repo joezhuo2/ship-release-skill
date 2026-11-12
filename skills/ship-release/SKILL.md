@@ -23,6 +23,7 @@ All of these must pass before any file changes:
 
 - `git status --porcelain` is clean, or holds only changes meant for this release. Ask about anything else.
 - After `git fetch`, you are on the default branch and not behind its upstream. On any other branch, or in a linked worktree (`git worktree list`), the release goes through the PR route in step 7.
+- Save the `git worktree list` output. Step 10 uses it to tell your worktrees from the user's.
 - The tag does not exist: `git tag -l <tag>` and `git ls-remote --tags origin <tag>` are both empty.
 - `gh auth status` succeeds.
 - If `package.json` exists and is not `"private": true`: `npm whoami` succeeds and `npm view <name>@<version> version` finds nothing.
@@ -97,11 +98,7 @@ Then tag the commit that is on the default branch: `git tag -a <tag> -m "<tag>"`
    - Run the tests, commit the merge, push.
 5. **Checks.** `gh pr checks --watch`. If one fails, read `gh run view --log-failed`, fix, push, and watch again.
 6. **Merge.** Use the method earlier PRs used (`gh pr list --state merged --limit 5 --json mergeCommit,title`); default `gh pr merge --squash --delete-branch`. In a linked worktree leave out `--delete-branch` and run `git push origin --delete <branch>` afterwards. If a review is required, stop and ask the user for it. Never `--admin`.
-7. **Sync.** In the main checkout: `git switch <default>` and `git pull --ff-only`. This is the commit to tag.
-8. **Delete the worktree, if the branch lived in one.** From the main checkout:
-   - `git worktree remove <path>`. No `--force`: if git refuses, show the user the files left in it and ask.
-   - `git branch -d <branch>`. After a squash merge git refuses; confirm `gh pr view <number> --json state` says `MERGED`, then use `-D`.
-   - `git worktree prune`.
+7. **Sync.** In the main checkout: `git switch <default>` and `git pull --ff-only`. This is the commit to tag. Worktree cleanup happens in step 10.
 
 ## 8. GitHub release
 
@@ -119,9 +116,21 @@ Skip if there is no `package.json` or it is private.
 - If npm asks for a one-time password or browser login, stop and ask the user to run `npm publish` themselves. Never ask for or type their password or token.
 - Verify: `npm view <name>@<new> version` prints the version. The registry can lag; retry for up to a minute. Then check `npm view <name> dist-tags.latest`.
 
-## 10. Report
+## 10. Clean up worktrees
 
-Give the version, the tag, the release URL, the npm URL, and anything skipped, failed or not verified.
+Delete every worktree you created in this session: those missing from the list saved in step 2, and any you made or entered earlier in the conversation. Leave the user's worktrees alone.
+
+Run `git worktree list` from the main checkout. For each of yours:
+
+- `git worktree remove <path>`. No `--force`: if git refuses, show the user the files left in it and ask.
+- `git branch -d <branch>`. After a squash merge git refuses; confirm `gh pr view <number> --json state` says `MERGED`, then use `-D`. Never delete an unmerged branch without asking.
+- If the remote branch is still there and its PR is merged, `git push origin --delete <branch>`.
+
+Finish with `git worktree prune` and run `git worktree list` again; only the user's worktrees should remain.
+
+## 11. Report
+
+Give the version, the tag, the release URL, the npm URL, the worktrees removed, and anything skipped, failed or not verified.
 
 ## When something goes wrong
 

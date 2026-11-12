@@ -64,10 +64,11 @@ Restart Claude Code afterwards. The skill needs `git` and the
 | README | Updates hardcoded version badges and pinned install lines; leaves dynamic badges alone. |
 | Confirm | Shows the version, files and changelog section, and asks once before anything goes public. |
 | Commit, land, tag | Release commit in the repo's style, pushed directly or through a pull request, then an annotated tag. Never `--force`. |
-| Pull request route | On a branch, in a worktree or with a protected default branch: pre-PR check, open the PR, fix conflicts, wait for checks, merge, then remove the worktree and branch. |
+| Pull request route | On a branch, in a worktree or with a protected default branch: pre-PR check, open the PR, fix conflicts, wait for checks, merge. |
 | GitHub release | Waits for a tag-triggered release workflow if the repo has one, otherwise `gh release create` with the changelog section. |
 | npm | Publishes unless a workflow does or the package is private, then checks the registry shows the new version. |
-| Report | Version, tag, release URL, npm URL, and anything skipped or failed. |
+| Clean up worktrees | Removes the worktrees it created during the session and their merged branches, then prunes. Leaves yours alone. |
+| Report | Version, tag, release URL, npm URL, worktrees removed, and anything skipped or failed. |
 
 After a push it only fixes forward: no moved tags, no force-push, no `npm unpublish`.
 
